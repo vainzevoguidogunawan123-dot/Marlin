@@ -1,0 +1,42 @@
+name: Build Marlin Firmware
+
+on:
+  push:
+    branches:
+      - bugfix-2.1.x
+      - main
+      - master
+  pull_request:
+    branches:
+      - bugfix-2.1.x
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: "3.10"
+
+      - name: Install PlatformIO Core
+        run: |
+          python -m pip install --upgrade pip
+          pip install platformio
+
+      - name: Build firmware
+        run: |
+          platformio run
+
+      - name: Upload firmware artifacts
+        uses: actions/upload-artifact@v3
+        with:
+          name: marlin-firmware
+          path: |
+            .pio/build/*/firmware*.bin
+            .pio/build/*/firmware*.hex
+            .pio/build/*/firmware*.elf
