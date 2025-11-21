@@ -1,9 +1,10 @@
-name: Build Marlin Firmware
+name: Build Marlin Firmware (GD32F303RET6)
 
 on:
+  workflow_dispatch:
   push:
     branches:
-      - bugfix-2.1.x
+      - main
   pull_request:
 
 jobs:
@@ -12,25 +13,30 @@ jobs:
 
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v3
 
-      - name: Set up Python
-        uses: actions/setup-python@v5
-        with:
-          python-version: "3.10"
-
-      - name: Install PlatformIO Core
+      - name: Install PlatformIO
         run: |
-          python -m pip install --upgrade pip
-          pip install platformio
+          pip install -U platformio
 
-      - name: Build firmware (STM32F103RE_creality)
+      - name: Prepare Marlin Environment
+        run: |
+          pio pkg install -g --platform ststm32
+          pio pkg install -g --platform ststm32@~15.5.0
+          pio pkg install -g --toolchain gcc-arm-none-eabi
+        continue-on-error: true
+
+      - name: Build Firmware
         run: |
           platformio run -e STM32F103RE_creality
+        working-directory: .
 
-      - name: Upload firmware artifacts
+      - name: Upload firmware artifact
         uses: actions/upload-artifact@v4
         with:
-          name: marlin-firmware
-          path: .pio/build/STM32F103RE_creality/firmware*.bin
+          name: firmware-gd32-422
+          path: |
+            .pio/build/STM32F103RE_creality/firmware.bin
+            .pio/build/STM32F103RE_creality/firmware.elf
+            .pio/build/STM32F103RE_creality/firmware.map
           if-no-files-found: warn
