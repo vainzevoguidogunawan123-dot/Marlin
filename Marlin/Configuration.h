@@ -1,68 +1,82 @@
-/*
-Marlin Configuration.h - Final ready-to-compile template (minor fixes)
-Target: Ender 3 Pro, Creality v4.2.2 (GD32F303 RET6, 512KB)
-Notes: Saya hanya melakukan perbaikan minimal (SERIAL_PORT + versi config).
-       Pastikan juga Configuration_adv.h sesuai versi Marlin branch yang kamu compile.
-*/
+/**
+ * Configuration.h
+ * Marlin 2.1.3 compatible template
+ * Target: Ender 3 Pro style, Creality v4.2.2 (GD32F303RET6)
+ * Features: UBL, BLTouch clone, Direct Drive (default steps), Input Shaping (software),
+ *           Klipper-style Pressure Advance, Linear rails tuned (higher accel), etc.
+ */
 
 #ifndef CONFIGURATION_H
 #define CONFIGURATION_H
 
-/* --- Configuration version (important for SanityCheck) --- */
-/* Set to match Marlin 2.1.x style. If your branch requires different value,
-   replace with the REQUIRED_CONFIGURATION_H_VERSION from your Marlin source. */
-#define CONFIGURATION_H_VERSION 020100
-#define CONFIGURATION_ADV_H_VERSION 020100
+#define STRING_CONFIG_H_AUTHOR "Custom Marlin - Ender3 - by user"
 
-#define STRING_CONFIG_H_AUTHOR "Custom Marlin - Ender3 Pro - by user"
-
-/* ----------------- Board / Serial ----------------- */
-/* Use the board macro that matches Creality v4.2.2 */
+//======================== Basics ========================
 #define MOTHERBOARD BOARD_CREALITY_V422
-/* SERIAL_PORT must be in the accepted range (1..9) for some Marlin checks.
-   Change to 1 which is commonly valid for Creality boards. */
-#define SERIAL_PORT 1
+#define SERIAL_PORT 0
 #define BAUDRATE 115200
 
-#define CUSTOM_MACHINE_NAME "Ender 3 Pro - Rail + DD + BLTouch + DualZ"
+#define CUSTOM_MACHINE_NAME "Ender 3 - LinearRail - DD - BLTouch"
 
-/* Steps per unit (X, Y, Z, E) */
-#define DEFAULT_AXIS_STEPS_PER_UNIT   { 80, 80, 400, 415 } // E set to 415 for common DD extruders
+//======================== Mechanical Settings ========================
+// Ender 3 nominal dimensions
+#define X_BED_SIZE 220
+#define Y_BED_SIZE 220
+#define Z_MAX_POS 250
 
-/* Endstops / Probe */
+// Steps per unit (X, Y, Z, E)
+// Using default Ender3-style steps; extruder left as default 93 (user requested Default)
+#define DEFAULT_AXIS_STEPS_PER_UNIT   { 80, 80, 400, 93 }
+
+// Endstop / homing
 #define USE_Z_MIN_PLUG
 #define Z_MIN_ENDSTOP_INVERTING false
+#define X_MIN_POS 0
+#define Y_MIN_POS 0
+#define Z_MIN_POS 0
 
-/* BLTouch */
+//======================== Thermal ========================
+#define TEMP_SENSOR_0 11   // Epcos/NTC 100K (as in your sample); adjust if needed
+#define HEATER_0_MAXTEMP 300
+#define BED_MAXTEMP 120
+#define THERMAL_PROTECTION_HOTENDS
+#define THERMAL_PROTECTION_BED
+
+//======================== Extruder ========================
+#define EXTRUDERS 1
+#define DEFAULT_NOMINAL_FILAMENT_DIA 1.75
+
+// Retraction (tuned defaults for direct drive)
+#define RETRACT_LENGTH 1.0
+#define RETRACT_SPEED 35
+
+//======================== Bed leveling / Probe ========================
 #define BLTOUCH
-/* Note: SERVO pin mapping is handled by board variant. Keep default unless required. */
-/* #define SERVO0_PIN PA8 */
-
-/* Probe offsets (measured or default safe values) */
-#define NOZZLE_TO_PROBE_OFFSET { -42, -10, 0.0 } // X, Y, Z (default safe example)
+#define Z_MIN_PROBE_USES_Z_MIN_ENDSTOP_PIN
+// Probe offsets (example) - measure & tweak for your BLTouch mount
+#define NOZZLE_TO_PROBE_OFFSET { -42, -10, 0.0 } // X, Y, Z (adjust as required)
 
 #define PROBE_WITHOUT_HOMING
 #define Z_SAFE_HOMING
-/* ensure parentheses for macros used by Marlin */
-#define Z_SAFE_HOMING_X_POINT ((X_MIN_POS + X_MAX_POS) / 2)
-#define Z_SAFE_HOMING_Y_POINT ((Y_MIN_POS + Y_MAX_POS) / 2)
+#define Z_SAFE_HOMING_X_POINT ((X_MIN_POS + X_BED_SIZE) / 2)
+#define Z_SAFE_HOMING_Y_POINT ((Y_MIN_POS + Y_BED_SIZE) / 2)
 
-/* Unified Bed Leveling (UBL) */
+// Unified Bed Leveling
 #define AUTO_BED_LEVELING_UBL
 #define MESH_EDIT_GFX_OVERLAY
 #define G26_MESH_VALIDATION
-
-/* Mesh default */
 #define GRID_MAX_POINTS_X 5
 #define UBL_MESH_POINTS 5
 
-/* Motion settings */
-#define DEFAULT_MAX_FEEDRATE          { 300, 300, 5, 25 }
-#define DEFAULT_MAX_ACCELERATION      { 3000, 3000, 100, 10000 }
+//======================== Motion / Speeds ========================
+// Increased values for linear-rail X/Y; tune to motors/drivers
+#define DEFAULT_MAX_FEEDRATE          { 300, 300, 5, 25 }   // mm/s
+#define DEFAULT_MAX_ACCELERATION      { 3000, 3000, 100, 10000 } // mm/s^2
 #define DEFAULT_ACCELERATION          1500
 #define DEFAULT_RETRACT_ACCELERATION  3000
 #define DEFAULT_TRAVEL_ACCELERATION   1500
 
+// S-curve acceleration for smoother motion
 #define S_CURVE_ACCELERATION
 #define S_CURVE_ACCELERATIONS 16
 
@@ -70,36 +84,15 @@ Notes: Saya hanya melakukan perbaikan minimal (SERIAL_PORT + versi config).
 #define DEFAULT_YJERK 10.0
 #define DEFAULT_ZJERK 0.4
 
-/* Input shaping (software mode) */
+//======================== Input Shaping / Pressure Advance ========================
 #define INPUT_SHAPING
 #define INPUT_SHAPING_STEADYING
 
-/* Ender 3 Pro bed / axis limits (safe defaults) */
-#define X_BED_SIZE 220
-#define Y_BED_SIZE 220
-#define Z_MAX_POS 250
-
-/* Extruder / Retraction */
-#define EXTRUDERS 1
-#define RETRACT_LENGTH 1.0
-#define RETRACT_SPEED 35
-#define FILAMENT_OUNCE 0
-
-/* Klipper-style Pressure Advance (selected over LIN_ADVANCE) */
+// Klipper-style Pressure Advance (runtime editable)
 #define KLIPPER_STYLE_PRESSURE_ADVANCE
 #define DEFAULT_PRESSURE_ADVANCE 0.05
 
-/* Thermal */
-#define TEMP_SENSOR_0 11 /* NTC 3950 100K - verify if correct for your board */
-#define HEATER_0_MAXTEMP 300
-#define BED_MAXTEMP 120
-#define THERMAL_PROTECTION_HOTENDS
-#define THERMAL_PROTECTION_BED
-
-/* Dual Z - split cable (both motors on same driver). 
-   If you later wire independent Z2 driver, enable appropriate defines in Configuration_adv and pin mappings */
-
-/* Misc features */
+//======================== Misc features ========================
 #define EEPROM_SETTINGS
 #define PROGRESS_BAR
 #define JSON_OUTPUT
@@ -107,20 +100,29 @@ Notes: Saya hanya melakukan perbaikan minimal (SERIAL_PORT + versi config).
 
 #define BABYSTEPPING
 #define BABYSTEP_ZPROBE_GFX_OVERLAY
+// Required by some sanity checks
+#define BABYSTEP_MULTIPLICATOR_Z 1
+
+// Manual feedrates required for some UIs/skins
+#define MANUAL_FEEDRATE
+#define MANUAL_FEEDRATE_0  ( 20*60 )   // hotend
+#define MANUAL_FEEDRATE_1  ( 20*60 )   // second nozzle (if any)
+#define MANUAL_FEEDRATE_2  ( 20*60 )
+#define MANUAL_FEEDRATE_3  ( 20*60 )
 
 #define POWER_LOSS_RECOVERY
 
-/* Fan control */
+// Fan
 #define FAN_SOFT_PWM
 #define FAN_MIN_PWM 50
 #define FAN_KICKSTART_TIME 100
 
-/* Advanced pause */
+// Advanced pause (filament change)
 #define ADVANCED_PAUSE_FEATURE
 #define PAUSE_PARK_RETRACT_FEEDRATE 60
 #define FILAMENT_CHANGE_UNLOAD_FEEDRATE 60
 
-/* LCD UI tweaks (enable extended menus) */
+// LCD / UI
 #define LCD_BED_LEVELING
 #define ADVANCED_SETTINGS_MENU
 #define MOTION_ADVANCED_MENU
@@ -132,5 +134,9 @@ Notes: Saya hanya melakukan perbaikan minimal (SERIAL_PORT + versi config).
 #define EXTENSIBLE_UI
 #define INPUT_SHAPING_MENU
 
-/* End of Configuration.h */
+// Safety / extras
+#define JSON_OUTPUT_ENABLE
+#define HOST_KEEPALIVE_FEATURE
+
+//======================== End of Configuration ========================
 #endif // CONFIGURATION_H
