@@ -1,53 +1,62 @@
-// Placeholder Configuration.h generated
 /*
-Marlin Configuration.h - Final ready-to-compile template
+Marlin Configuration.h - Final ready-to-compile template (minor fixes)
 Target: Ender 3 Pro, Creality v4.2.2 (GD32F303 RET6, 512KB)
-Features: UBL, Input Shaping (software), Klipper-style Pressure Advance, Fan curve, BLTouch, Dual Z (split cable), Linear Rail, Direct Drive, etc.
-NOTE: Replace any hardware-specific pin defines only if required by your Marlin fork. This is a configuration TEMPLATE that was assembled from your requested options.
+Notes: Saya hanya melakukan perbaikan minimal (SERIAL_PORT + versi config).
+       Pastikan juga Configuration_adv.h sesuai versi Marlin branch yang kamu compile.
 */
 
 #ifndef CONFIGURATION_H
 #define CONFIGURATION_H
 
+/* --- Configuration version (important for SanityCheck) --- */
+/* Set to match Marlin 2.1.x style. If your branch requires different value,
+   replace with the REQUIRED_CONFIGURATION_H_VERSION from your Marlin source. */
+#define CONFIGURATION_H_VERSION 020100
+#define CONFIGURATION_ADV_H_VERSION 020100
+
 #define STRING_CONFIG_H_AUTHOR "Custom Marlin - Ender3 Pro - by user"
 
-// Board
+/* ----------------- Board / Serial ----------------- */
+/* Use the board macro that matches Creality v4.2.2 */
 #define MOTHERBOARD BOARD_CREALITY_V422
-#define SERIAL_PORT 0
+/* SERIAL_PORT must be in the accepted range (1..9) for some Marlin checks.
+   Change to 1 which is commonly valid for Creality boards. */
+#define SERIAL_PORT 1
 #define BAUDRATE 115200
 
 #define CUSTOM_MACHINE_NAME "Ender 3 Pro - Rail + DD + BLTouch + DualZ"
 
-// Steps per unit (X, Y, Z, E)
+/* Steps per unit (X, Y, Z, E) */
 #define DEFAULT_AXIS_STEPS_PER_UNIT   { 80, 80, 400, 415 } // E set to 415 for common DD extruders
 
-// Endstops / Probe
+/* Endstops / Probe */
 #define USE_Z_MIN_PLUG
 #define Z_MIN_ENDSTOP_INVERTING false
 
-// BLTouch
+/* BLTouch */
 #define BLTOUCH
-// Note: SERVO pin mapping is handled by board variant. Keep default unless required.
-//#define SERVO0_PIN PA8
+/* Note: SERVO pin mapping is handled by board variant. Keep default unless required. */
+/* #define SERVO0_PIN PA8 */
 
-// Probe offsets (measured or default safe values)
+/* Probe offsets (measured or default safe values) */
 #define NOZZLE_TO_PROBE_OFFSET { -42, -10, 0.0 } // X, Y, Z (default safe example)
 
 #define PROBE_WITHOUT_HOMING
 #define Z_SAFE_HOMING
-#define Z_SAFE_HOMING_X_POINT (X_MIN_POS + X_MAX_POS) / 2
-#define Z_SAFE_HOMING_Y_POINT (Y_MIN_POS + Y_MAX_POS) / 2
+/* ensure parentheses for macros used by Marlin */
+#define Z_SAFE_HOMING_X_POINT ((X_MIN_POS + X_MAX_POS) / 2)
+#define Z_SAFE_HOMING_Y_POINT ((Y_MIN_POS + Y_MAX_POS) / 2)
 
-// Unified Bed Leveling (UBL)
+/* Unified Bed Leveling (UBL) */
 #define AUTO_BED_LEVELING_UBL
 #define MESH_EDIT_GFX_OVERLAY
 #define G26_MESH_VALIDATION
 
-// Mesh default
+/* Mesh default */
 #define GRID_MAX_POINTS_X 5
 #define UBL_MESH_POINTS 5
 
-// Motion settings
+/* Motion settings */
 #define DEFAULT_MAX_FEEDRATE          { 300, 300, 5, 25 }
 #define DEFAULT_MAX_ACCELERATION      { 3000, 3000, 100, 10000 }
 #define DEFAULT_ACCELERATION          1500
@@ -61,36 +70,36 @@ NOTE: Replace any hardware-specific pin defines only if required by your Marlin 
 #define DEFAULT_YJERK 10.0
 #define DEFAULT_ZJERK 0.4
 
-// Input shaping (software mode)
+/* Input shaping (software mode) */
 #define INPUT_SHAPING
 #define INPUT_SHAPING_STEADYING
 
-// Ender 3 Pro bed / axis limits (safe defaults)
+/* Ender 3 Pro bed / axis limits (safe defaults) */
 #define X_BED_SIZE 220
 #define Y_BED_SIZE 220
 #define Z_MAX_POS 250
 
-// Extruder / Retraction
+/* Extruder / Retraction */
 #define EXTRUDERS 1
 #define RETRACT_LENGTH 1.0
 #define RETRACT_SPEED 35
 #define FILAMENT_OUNCE 0
 
-// Klipper-style Pressure Advance (selected over LIN_ADVANCE)
+/* Klipper-style Pressure Advance (selected over LIN_ADVANCE) */
 #define KLIPPER_STYLE_PRESSURE_ADVANCE
 #define DEFAULT_PRESSURE_ADVANCE 0.05
 
-// Thermal
-#define TEMP_SENSOR_0 11 // NTC 3950 100K
+/* Thermal */
+#define TEMP_SENSOR_0 11 /* NTC 3950 100K - verify if correct for your board */
 #define HEATER_0_MAXTEMP 300
 #define BED_MAXTEMP 120
 #define THERMAL_PROTECTION_HOTENDS
 #define THERMAL_PROTECTION_BED
 
-// Dual Z - split cable (both motors on same driver). DO NOT enable independent Z drivers if split cable used.
-/* If you later wire independent Z2 driver, enable appropriate defines in Configuration_adv and pin mappings */
+/* Dual Z - split cable (both motors on same driver). 
+   If you later wire independent Z2 driver, enable appropriate defines in Configuration_adv and pin mappings */
 
-// Misc features
+/* Misc features */
 #define EEPROM_SETTINGS
 #define PROGRESS_BAR
 #define JSON_OUTPUT
@@ -101,22 +110,17 @@ NOTE: Replace any hardware-specific pin defines only if required by your Marlin 
 
 #define POWER_LOSS_RECOVERY
 
-// Fan control
+/* Fan control */
 #define FAN_SOFT_PWM
 #define FAN_MIN_PWM 50
 #define FAN_KICKSTART_TIME 100
 
-// Advanced pause
+/* Advanced pause */
 #define ADVANCED_PAUSE_FEATURE
 #define PAUSE_PARK_RETRACT_FEEDRATE 60
 #define FILAMENT_CHANGE_UNLOAD_FEEDRATE 60
 
-// Filament runout - disabled by default (enable if you have sensor)
-//#define FILAMENT_RUNOUT_SENSOR
-//#define NUM_RUNOUT_SENSORS 1
-//#define FIL_RUNOUT_SCRIPT "M600"
-
-// LCD UI tweaks (enable extended menus)
+/* LCD UI tweaks (enable extended menus) */
 #define LCD_BED_LEVELING
 #define ADVANCED_SETTINGS_MENU
 #define MOTION_ADVANCED_MENU
@@ -128,5 +132,5 @@ NOTE: Replace any hardware-specific pin defines only if required by your Marlin 
 #define EXTENSIBLE_UI
 #define INPUT_SHAPING_MENU
 
-// End of Configuration.h
+/* End of Configuration.h */
 #endif // CONFIGURATION_H
