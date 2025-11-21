@@ -4,11 +4,7 @@ on:
   push:
     branches:
       - bugfix-2.1.x
-      - main
-      - master
   pull_request:
-    branches:
-      - bugfix-2.1.x
 
 jobs:
   build:
@@ -28,16 +24,13 @@ jobs:
           python -m pip install --upgrade pip
           pip install platformio
 
-      - name: Build firmware
+      - name: Build firmware (STM32F103RE_creality)
         run: |
-          platformio run
+          platformio run -e STM32F103RE_creality
 
       - name: Upload firmware artifacts
         uses: actions/upload-artifact@v4
         with:
           name: marlin-firmware
-          path: |
-            .pio/build/*/firmware*.bin
-            .pio/build/*/firmware*.hex
-            .pio/build/*/firmware*.elf
-          if-no-files-found: ignore
+          path: .pio/build/STM32F103RE_creality/firmware*.bin
+          if-no-files-found: warn
