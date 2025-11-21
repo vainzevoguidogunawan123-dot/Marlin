@@ -1,11 +1,7 @@
 {
-  "files.associations": {
-    "*.h": "cpp"
-  },
-  "cmake.sourceDirectory": "${workspaceFolder}",
-  "C_Cpp.default.configurationProvider": "ms-vscode.makefile-tools",
-  "C_Cpp.errorSquiggles": "disabled",
-  "editor.tabSize": 2,
-  "editor.detectIndentation": false,
-  "terminal.integrated.defaultProfile.linux": "bash"
+  "recommendations": [
+    "platformio.platformio-ide",
+    "ms-vscode.cpptools",
+    "ms-python.python"
+  ]
 }
