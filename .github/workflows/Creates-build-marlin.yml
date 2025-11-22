@@ -10,45 +10,41 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-
     - name: Checkout Repository
       uses: actions/checkout@v4
 
     # ---------------------------------------------
-    #  FIX FOLDER STRUCTURE
+    #  FIX src/ AS PROXY (TIDAK MEMINDAH FILE MARLIN)
     # ---------------------------------------------
-    - name: Fix Marlin Folder Structure
+    - name: Create src proxy file
       run: |
-        rm -rf src
         mkdir -p src
-        cp -r Marlin/* src/
-
-    # ---------------------------------------------
-    #  CLEAN PIO BUILD CACHE
-    # ---------------------------------------------
-    - name: Remove .pio Folder
-      run: |
-        rm -rf .pio
+        echo '#include "../Marlin/src/MarlinCore.cpp"' > src/Marlin.cpp
 
     # ---------------------------------------------
     #  INSTALL PLATFORMIO
     # ---------------------------------------------
     - name: Install PlatformIO
-      run: |
-        pip install -U platformio
+      run: pip install -U platformio
+
+    # ---------------------------------------------
+    #  CLEAN BUILD CACHE
+    # ---------------------------------------------
+    - name: Clean PIO cache
+      run: rm -rf .pio
 
     # ---------------------------------------------
     #  BUILD
     # ---------------------------------------------
-    - name: Build Firmware (Ender 3 Pro – 4.2.2 GD32F303)
-      run: |
-        platformio run -e STM32F103RET_creality
+    - name: Build firmware
+      run: platformio run -e STM32F103RET_creality
 
     # ---------------------------------------------
-    #  UPLOAD ARTIFACT (v4)
+    #  ARTIFACT OUTPUT
     # ---------------------------------------------
-    - name: Upload Firmware
+    - name: Upload firmware
       uses: actions/upload-artifact@v4
       with:
         name: firmware-bin
         path: .pio/build/STM32F103RET_creality/firmware.bin
+
