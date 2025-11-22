@@ -1,29 +1,26 @@
-name: Build Marlin Firmware
+name: Build Firmware
 
 on:
-  push:
-    branches:
-      - bugfix-2.1.x
   workflow_dispatch:
+  push:
+    branches: [ "*" ]
 
 jobs:
   build:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
+    - name: Checkout
+      uses: actions/checkout@v3
 
-      - name: Install PlatformIO
-        run: |
-          pip install -U platformio
+    - name: Setup Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: 3.11
 
-      - name: Build Firmware
-        run: |
-          platformio run -e STM32F103RET_creality
+    - name: Install PlatformIO
+      run: pip install platformio
 
-      - name: Upload firmware artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: firmware
-          path: .pio/build/STM32F103RET_creality/firmware.bin
+    - name: Build Marlin
+      working-directory: ./Marlin
+      run: platformio run
