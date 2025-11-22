@@ -2,49 +2,29 @@ name: Build Marlin Firmware
 
 on:
   push:
-    branches: [ main ]
-  workflow_dispatch:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
 
 jobs:
   build:
     runs-on: ubuntu-latest
 
     steps:
-    - name: Checkout Repository
+    - name: Checkout repository
       uses: actions/checkout@v4
 
-    # ---------------------------------------------
-    #  FIX src/ AS PROXY (TIDAK MEMINDAH FILE MARLIN)
-    # ---------------------------------------------
-    - name: Create src proxy file
+    - name: Install PlatformIO Core
       run: |
-        mkdir -p src
-        echo '#include "../Marlin/src/MarlinCore.cpp"' > src/Marlin.cpp
+        pip install -U platformio
 
-    # ---------------------------------------------
-    #  INSTALL PLATFORMIO
-    # ---------------------------------------------
-    - name: Install PlatformIO
-      run: pip install -U platformio
+    # Build from ROOT (bukan dari folder Marlin!)
+    - name: Compile Marlin
+      run: |
+        platformio run
 
-    # ---------------------------------------------
-    #  CLEAN BUILD CACHE
-    # ---------------------------------------------
-    - name: Clean PIO cache
-      run: rm -rf .pio
-
-    # ---------------------------------------------
-    #  BUILD
-    # ---------------------------------------------
-    - name: Build firmware
-      run: platformio run -e STM32F103RET_creality
-
-    # ---------------------------------------------
-    #  ARTIFACT OUTPUT
-    # ---------------------------------------------
-    - name: Upload firmware
+    - name: Upload firmware artifacts
       uses: actions/upload-artifact@v4
       with:
-        name: firmware-bin
-        path: .pio/build/STM32F103RET_creality/firmware.bin
-
+        name: firmware
+        path: .pio/build/**/firmware*.bin
