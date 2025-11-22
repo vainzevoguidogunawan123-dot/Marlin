@@ -23,4 +23,3 @@ jobs:
 
     - name: Build Marlin Firmware
       run: platformio run -e STM32F103RET_creality
-
