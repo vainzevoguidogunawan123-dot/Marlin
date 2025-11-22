@@ -22,5 +22,5 @@ jobs:
       run: pip install platformio
 
     - name: Build Marlin
-      working-directory: ./Marlin
+      working-directory: .
       run: platformio run
