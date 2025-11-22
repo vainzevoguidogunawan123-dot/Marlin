@@ -1,4 +1,3 @@
-Marlin/Configuration.h
 /**
  * Configuration.h — Ender-3 Pro
  * Board: Creality V4.2.2 (GD32F303)
