@@ -1,59 +1,47 @@
-/**
- * Configuration_adv.h
- * Marlin 2.1.3 compatible advanced settings
- */
+/* Configuration_adv.h
+   Performance & features for Ender-3 Pro custom build
+*/
 
-#ifndef CONFIGURATION_ADV_H
-#define CONFIGURATION_ADV_H
+// ---- Motion & extrusion ----
+#define JUNCTION_DEVIATION_MM 0.02
 
-// ---------------- Pressure Advance (Klipper-style)
-#ifdef KLIPPER_STYLE_PRESSURE_ADVANCE
-  #define PRESSURE_ADVANCE
-  // DEFAULT_PRESSURE_ADVANCE is set in Configuration.h
+// Linear Advance (direct drive tuning)
+#if ENABLED(LIN_ADVANCE)
+  #define LIN_ADVANCE_K 0.15   // starting value; tune with test prints
 #endif
 
-// ---------------- Input Shaping (software)
-#ifdef INPUT_SHAPING
-  // Enable UI tuners
-  #define SHAPING_TUNER_ENABLE
-  // Default shaping parameters (software-mode)
-  #define INPUT_SHAPING_FREQ 30.0
-  #define INPUT_SHAPING_DAMPING 0.15
-  // Allow enabling/disabling on the fly via UI
+// Babystepping for Z fine-tune during print
+#define BABYSTEPPING
+#define BABYSTEP_DISPLAY_TOTAL
+
+// --- Dual Z auto-align (requires probe) ---
+#define Z_STEPPER_AUTO_ALIGN
+#ifndef NUM_Z_STEPPERS
+  #define NUM_Z_STEPPERS 2
 #endif
+#define HOME_AFTER_G34
+#define Z_STEPPER_AUTO_ALIGN_X_FIRST  40
+#define Z_STEPPER_AUTO_ALIGN_Y_FIRST  40
+#define Z_STEPPER_AUTO_ALIGN_X_SECOND 40
+#define Z_STEPPER_AUTO_ALIGN_Y_SECOND 180
 
-// ---------------- Junction deviation
-#define JUNCTION_DEVIATION
-#define DEFAULT_JUNCTION_DEVIATION 0.02
+// --- Input Shaper (optional; needs accelerometer) ---
+// #define INPUT_SHAPER
+// #if ENABLED(INPUT_SHAPER)
+//   #define SHAPER_FREQ_1 40.0
+// #endif
 
-// ---------------- Babystepping
-#define BABYSTEP_MULTIPLICATOR_Z 1    // ensure sanity
+// --- Safety & power ---
+#define POWER_CHECK
+#define HAS_POWER_SWITCH
 
-// ---------------- UBL helpers
-#ifdef AUTO_BED_LEVELING_UBL
-  #define UBL_G26_MESH_VALIDATION
-  #define UBL_CLEAR_BED_AFTER_PROBE
-  #define UBL_MESH_EDIT_GFX_OVERLAY
-  #define UBL_MESH_EDIT_GFX_OVERLAY_FLIP 0
-#endif
-
-// ---------------- Motor current / steppers placeholders
-// Tune these in runtime or in build if you know exact currents
-#define MOTOR_CURRENT_PWM_DEFAULT 800 // mA example
-
-// ---------------- Thermal protections
-#define THERMAL_PROTECTION_HOTENDS
-#define THERMAL_PROTECTION_BED
-
-// ---------------- Advanced Pause
+// --- Filament change & park ---
 #define ADVANCED_PAUSE_FEATURE
+#define NOZZLE_PARK_FEATURE
+#define FILAMENT_CHANGE_FEATURE
 
-// ---------------- Input shaping UI (expose fields)
-#ifdef INPUT_SHAPING_MENU
-  #define INPUT_SHAPING_UI_ENABLED
-#endif
+// --- TMC / driver settings ---
+// If you plan to use sensorless homing with TMC, configure drivers here.
+// For stock A4988 do not enable TMC-specific options.
 
-// ---------------- Misc
-#define STATUS_REPORT_NO_NEWLINE
-
-#endif // CONFIGURATION_ADV_H
+// End of Configuration_adv.h
