@@ -11,17 +11,7 @@ jobs:
 
     steps:
     - name: Checkout
-      uses: actions/checkout@v4
-      with:
-        submodules: recursive
-
-    - name: Locate Marlin folder
-      run: |
-        echo "PWD:"
-        pwd
-        echo "---"
-        echo "List:"
-        ls -R .
+      uses: actions/checkout@v3
 
     - name: Setup Python
       uses: actions/setup-python@v4
@@ -31,6 +21,6 @@ jobs:
     - name: Install PlatformIO
       run: pip install platformio
 
-    - name: Build Marlin
-      working-directory: .
+    - name: Build Marlin Firmware
       run: platformio run -e STM32F103RET_creality
+
