@@ -11,7 +11,12 @@ jobs:
 
     steps:
     - name: Checkout
-      uses: actions/checkout@v4    # versi terbaru
+      uses: actions/checkout@v4
+
+    - name: Debug folder structure
+      run: |
+        echo "PWD = $(pwd)"
+        ls -R .
 
     - name: Setup Python
       uses: actions/setup-python@v5
@@ -22,8 +27,7 @@ jobs:
       run: pip install platformio
 
     - name: Build Marlin
-      working-directory: ./Marlin   # <<< INI SOLUSI INTINYA
       run: |
-        echo "Building in $(pwd)"
-        ls -lah
+        echo "PWD: $(pwd)"
+        cat platformio.ini || echo "platformio.ini NOT FOUND!"
         platformio run -e STM32F103RET_creality
