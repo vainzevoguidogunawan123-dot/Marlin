@@ -1,25 +1,64 @@
-name: Build Firmware
+name: Build Marlin Firmware (bugfix-2.1.x)
 
 on:
   workflow_dispatch:
   push:
-    branches: [ "*" ]
+    branches:
+      - main
+      - bugfix-2.1.x
 
 jobs:
   build:
     runs-on: ubuntu-latest
+    timeout-minutes: 60
 
     steps:
-    - name: Checkout
-      uses: actions/checkout@v3
+    - name: Checkout repository (with submodules)
+      uses: actions/checkout@v4
+      with:
+        submodules: recursive
+        fetch-depth: 0
+
+    - name: Show repo layout (debug)
+      run: |
+        echo "PWD: $GITHUB_WORKSPACE"
+        echo "=== root files ==="
+        ls -la $GITHUB_WORKSPACE
+        echo "=== list Marlin dir ==="
+        ls -la $GITHUB_WORKSPACE/Marlin || true
+        echo "=== print platformio.ini if exists ==="
+        if [ -f "$GITHUB_WORKSPACE/platformio.ini" ]; then
+          echo "platformio.ini found in root"
+          sed -n '1,200p' platformio.ini
+        else
+          echo "platformio.ini NOT found in root!"
+        fi
 
     - name: Setup Python
       uses: actions/setup-python@v4
       with:
-        python-version: 3.11
+        python-version: '3.11'
 
-    - name: Install PlatformIO
-      run: pip install platformio
+    - name: Install PlatformIO core
+      run: |
+        python -m pip install --upgrade pip
+        pip install -U platformio
 
-    - name: Build Marlin Firmware
-      run: platformio run -e STM32F103RET_creality
+    - name: Clean previous build cache (safe)
+      run: |
+        rm -rf .pio || true
+
+    - name: Build Marlin (root project)
+      # IMPORTANT: run PlatformIO from repo root because platformio.ini is in root,
+      # and extra_scripts/src_filter in platformio.ini reference the Marlin/ subfolder.
+      run: |
+        platformio run -e STM32F103RET_creality
+      env:
+        PLATFORMIO_CLI_PIOTEST: "1"
+
+    - name: Upload firmware artifact
+      if: success()
+      uses: actions/upload-artifact@v4
+      with:
+        name: firmware
+        path: .pio/build/**/firmware*.bin
