@@ -13,7 +13,7 @@
  * If unsure, leave as-is and edit platformio.ini to select the correct env before building (see README in this message).
  */
 #ifndef MOTHERBOARD
-  #define MOTHERBOARD BOARD_CREALITY_V4   // <-- UBAH jika board macro di Marlin berbeda. Lihat catatan di README.
+  #define MOTHERBOARD BOARD_CREALITY_V4_2_2   // <-- UBAH jika board macro di Marlin berbeda. Lihat catatan di README.
 #endif
 
 #define MACHINE_NAME "Ender-3 Pro - Custom (v4.2.2 GD32F303)"
